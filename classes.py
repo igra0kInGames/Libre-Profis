@@ -1,52 +1,6 @@
 import pygame
 
 
-class Button:
-    def __init__(self, x, y, scaleX, scaleY, bgColor=(255, 255, 255), text="sample text",
-                 textColor=(0, 0, 0), fontSize=16, smooth=0, borderSize=-1, screen=None):
-        self.x = x
-        self.y = y
-        self.scaleX = scaleX
-        self.scaleY = scaleY
-        self.bgColor = bgColor
-        self.text = text
-        self.textColor = textColor
-        self.textSize = fontSize
-        self.smooth = smooth
-        self.borderSize = borderSize
-        self.font = pygame.font.Font(None, fontSize)
-        self.screen = screen
-        if self.text.count(".") == 0:
-            self.textSurfaces = [self.font.render(self.text, True, self.textColor)]
-        else:
-            self.l = self.text.split('.')
-            self.textSurfaces = []
-            for i in range(len(self.l)):
-                self.textSurfaces.append(self.font.render(self.l[i], True, self.textColor))
-
-    def draw(self):
-        pygame.draw.rect(self.screen, self.bgColor, (self.x, self.y, self.scaleX, self.scaleY),
-                         border_radius=self.smooth)
-        if self.borderSize != -1:
-            for i in range(len(self.textSurfaces)):
-                self.screen.blit(self.textSurfaces[i], (self.x+5+self.borderSize, self.y+5+self.textSize*i+self.borderSize))
-            pygame.draw.rect(self.screen, self.textColor, (self.x, self.y, self.scaleX, self.scaleX), self.borderSize,
-                             border_radius=self.smooth)
-        else:
-            for i in range(len(self.textSurfaces)):
-                self.screen.blit(self.textSurfaces[i], (self.x+5, self.y+5+self.textSize*i))
-
-    def isClick(self, event, button=1):
-        x, y = pygame.mouse.get_pos()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == button \
-                    and self.x < x < self.scaleX+self.x \
-                    and self.y < y < self.scaleY+self.y:
-                return True
-            else:
-                return False
-
-
 class Text:
     def __init__(self, screen, text, x, y, fontSize=32, textColor=(0, 0, 0)):
         self.screen = screen
@@ -64,3 +18,31 @@ class Text:
     def setText(self, text):
         self.text = text
         self.textSurfaces = self.font.render(self.text, True, self.textColor)
+
+
+class Book:
+    def __init__(self, id, name, author_name, cover, year):
+        if len(id) <= 8:
+            if id.find(" "):
+                self.id = id
+            else:
+                print(f"No One space {id}")
+                self.id = 0
+        else:
+            print(f"Too much symbol {id}")
+            self.id = 0
+        self.name = name
+        self.author_name = author_name
+        self.cover = cover
+        if year.isdigits():
+            self.year = year
+        else:
+            self.year = 1970
+            print(f"Year is not number {id}")
+
+    def print_console(self):
+        print(f"Книга номер: {self.id}")
+        print(f"  Название: {self.name}")
+        print(f"  Автор: {self.author_name}")
+        print(f"  Обложка: {self.cover}")
+        print(f"  Год: {self.year}")

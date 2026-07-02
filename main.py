@@ -6,7 +6,7 @@ pygame.init()
 size = (800, 600)
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
-texts = []
+books = []
 input_path_manager = pygame_gui.UIManager(size)
 input_data = pygame_gui.UIManager(size)
 
@@ -40,10 +40,16 @@ input_year_text = pygame_gui.elements.UITextEntryLine(
     manager=input_data
 )
 
-dropdown = pygame_gui.elements.UIDropDownMenu(
+input_cover_button = pygame_gui.elements.UIDropDownMenu(
     options_list=["Твёрдая", "Мягкая"],
     starting_option="Твёрдая",
     relative_rect=pygame.Rect((620, 6), (100, 32)),
+    manager=input_data
+)
+
+input_data_button = pygame_gui.elements.UIButton(
+    relative_rect=pygame.Rect((653, 554), (128, 32)),
+    text='Добавить книгу',
     manager=input_data
 )
 
@@ -59,6 +65,12 @@ while running:
                 if event.ui_element == input_path_button:
                     stage_number += 1
                     stage = stages[stage_number]
+            elif stage == "add_new_book":
+                if event.ui_element == input_data_button:
+                    books.append(Book(input_inventory_num_text.get_text(), input_name_text.get_text(),
+                                      input_author_name_text.get_text(), input_cover_button.selected_option,
+                                      input_year_text.get_text()))
+                    books[-1].print_console()
         if stage == "input_path_file":
             input_path_manager.process_events(event)
         elif stage == "add_new_book":

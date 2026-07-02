@@ -1,4 +1,6 @@
 import pygame_gui
+from openpyxl import Workbook
+from openpyxl import load_workbook
 
 from classes import *
 
@@ -13,6 +15,7 @@ input_data = pygame_gui.UIManager(size)
 stages = ["input_path_file", 'add_new_book']
 stage_number = 0
 stage = stages[stage_number]
+
 input_path_text = pygame_gui.elements.UITextEntryLine(
     relative_rect=pygame.Rect((330, 6), (350, 32)),
     manager=input_path_manager
@@ -41,8 +44,8 @@ input_year_text = pygame_gui.elements.UITextEntryLine(
 )
 
 input_cover_button = pygame_gui.elements.UIDropDownMenu(
-    options_list=["Твёрдая", "Мягкая"],
-    starting_option="Твёрдая",
+    options_list=["Тверд", "Мягкий"],
+    starting_option="Тверд",
     relative_rect=pygame.Rect((620, 6), (100, 32)),
     manager=input_data
 )
@@ -53,10 +56,14 @@ input_data_button = pygame_gui.elements.UIButton(
     manager=input_data
 )
 
+ws = None
+wb = None
+last_string_num = 0
+excel_manager = None
+
 running = True
 while running:
     time_delta = clock.tick(60) / 1000.0
-    print(pygame.mouse.get_pos())
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -65,12 +72,29 @@ while running:
                 if event.ui_element == input_path_button:
                     stage_number += 1
                     stage = stages[stage_number]
+                    wb = load_workbook(input_path_text.get_text())
+                    ws = wb.active
+                    tmp = 1
+                    while ws[f"B{tmp}"].value is not None:
+                        tmp += 1
+                    last_string_num = tmp
+                    excel_manager = ExcelManager(input_path_text.get_text())
             elif stage == "add_new_book":
                 if event.ui_element == input_data_button:
+                    # print(input_cover_button.selected_option[0])
                     books.append(Book(input_inventory_num_text.get_text(), input_name_text.get_text(),
-                                      input_author_name_text.get_text(), input_cover_button.selected_option,
+                                      input_author_name_text.get_text(), input_cover_button.selected_option[0],
                                       input_year_text.get_text()))
                     books[-1].print_console()
+                    input_inventory_num_text.set_text("")
+                    input_name_text.set_text("")
+                    input_author_name_text.set_text("")
+                    input_year_text.set_text("")
+
+                    excel_manager.add_book_with_safeguards(books[-1], last_string_num)
+                    excel_manager.save()
+
+                    last_string_num += 1
         if stage == "input_path_file":
             input_path_manager.process_events(event)
         elif stage == "add_new_book":

@@ -44,8 +44,8 @@ input_year_text = pygame_gui.elements.UITextEntryLine(
 )
 
 input_cover_button = pygame_gui.elements.UIDropDownMenu(
-    options_list=["Тверд", "Мягкий"],
-    starting_option="Тверд",
+    options_list=["тверд", "мягкий"],
+    starting_option="тверд",
     relative_rect=pygame.Rect((620, 6), (100, 32)),
     manager=input_data
 )
